@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Psychology Assistant</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <h1>AI Psychology Assistant</h1>
+    <div id="chat-area"></div>
+    <div id="input-area">
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+        <button id="voice-button">Voice Input</button>
+    </div>
+    <div id="options-area">
+        <label>
+            <input type="checkbox" id="tts-checkbox"> Enable Text-to-Speech
+        </label>
+        <button id="end-day-button">End Day</button>
+    </div>
+
+    <script>
+        let conversationId = null;
+
+        function sendMessage() {
+            const userInput = $('#user-input').val();
+            if (userInput.trim() !== '') {
+                $('#chat-area').append(`<p><strong>You:</strong> ${userInput}</p>`);
+                $('#user-input').val('');
+
+                $.ajax({
+                    url: '/send_message/',
+                    method: 'POST',
+                    data: {
+                        message: userInput,
+                        conversation_id: conversationId
+                    },
+                    success: function(response) {
+                        $('#chat-area').append(`<p><strong>AI:</strong> ${response.response}</p>`);
+                        conversationId = response.conversation_id;
+                        
+                        if ($('#tts-checkbox').is(':checked')) {
+                            textToSpeech(response.response);
+                        }
+                    }
+                });
+            }
+        }
+
+        function startVoiceInput() {
+            $('#voice-button').prop('disabled', true).text('Recording...');
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    const mediaRecorder = new MediaRecorder(stream);
+                    let audioChunks = [];
+
+                    mediaRecorder.addEventListener("dataavailable", event => {
+                        audioChunks.push(event.data);
+                    });
+
+                    mediaRecorder.addEventListener("stop", () => {
+                        const audioBlob = new Blob(audioChunks);
+                        const formData = new FormData();
+                        formData.append("audio", audioBlob, "audio.webm");
+
+                        $.ajax({
+                            url: '/speech_to_text/',
+                            method: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                $('#user-input').val(response.text);
+                                sendMessage();
+                            },
+                            complete: function() {
+                                $('#voice-button').prop('disabled', false).text('Voice Input');
+                            }
+                        });
+                    });
+
+                    mediaRecorder.start();
+                    setTimeout(() => mediaRecorder.stop(), 5000);  // Grabar por 5 segundos
+                });
+        }
+
+        function textToSpeech(text) {
+            $.ajax({
+                url: '/text_to_speech/',
+                method: 'POST',
+                data: {
+                    text: text,
+                    language: 'en'  // You might want to make this dynamic based on user preference
+                },
+                success: function(response) {
+                    const audio = new Audio(response.audio_url);
+                    audio.play();
+                }
+            });
+        }
+        $('#end-day-button').click(function() {
+            $.ajax({
+                url: '/end_day/',
+                method: 'POST',
+                data: {
+                    conversation_id: conversationId
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert('Session ended. Summary: ' + response.summary);
+                        // Opcional: limpiar el chat o redirigir a una nueva página
+                    } else {
+                        alert('Error ending session: ' + response.message);
+                    }
+                }
+            });
+        });
+        $('#send-button').click(sendMessage);
+        $('#voice-button').click(startVoiceInput);
+        $('#user-input').keypress(function(e) {
+            if (e.which == 13) {
+                sendMessage();
+                return false;
+            }
+        });
+    </script>
+</body>
+</html>

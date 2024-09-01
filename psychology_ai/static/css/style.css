@@ -1,0 +1,82 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1a1a1a;
+    color: #ffffff;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    color: #ffa500;
+    text-align: center;
+}
+
+#chat-area {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #ff8c00;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #2d2d2d;
+}
+
+#user-input {
+    width: calc(100% - 220px);
+    padding: 10px;
+    margin-right: 10px;
+    background-color: #3d3d3d;
+    color: #ffffff;
+    border: 1px solid #ff8c00;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #ff8c00;
+    color: #1a1a1a;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #ffa500;
+}
+
+#tts-checkbox {
+    margin-left: 10px;
+}
+
+label {
+    color: #ffa500;
+}
+
+#chat-area::-webkit-scrollbar {
+    width: 10px;
+}
+
+#chat-area::-webkit-scrollbar-track {
+    background: #2d2d2d;
+}
+
+#chat-area::-webkit-scrollbar-thumb {
+    background: #ff8c00;
+}
+
+#chat-area::-webkit-scrollbar-thumb:hover {
+    background: #ffa500;
+}
+
+#chat-area p {
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+#chat-area p strong {
+    color: #ffa500;
+}
+
+#chat-area p:nth-child(odd) {
+    background-color: #333333;
+}
