@@ -21,7 +21,7 @@ PsicologoVirtual permite a los usuarios interactuar con un asistente de IA espec
 <table>
   <tr>
     <td>![image](https://github.com/user-attachments/assets/7d9315e2-5ceb-451f-b0f3-f4b4c82a3db4)</td>
-    <td>![image]<(https://github.com/user-attachments/assets/fec01567-6160-4ebf-ba42-32d7d72a355b)></td>
+    <td>![image]>(https://github.com/user-attachments/assets/fec01567-6160-4ebf-ba42-32d7d72a355b)<</td>
   </tr>
 </table>
 
